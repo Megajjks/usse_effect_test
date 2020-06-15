@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
+import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import CardView from './CardView'
 import Loader from './Loader'
@@ -16,6 +15,14 @@ const useStyles = makeStyles((theme) => ({
       justifyContent:"center",
       padding:"2em 5em"
     },
+    wraper: {
+      display: 'flex',
+      flexDirection: "row",
+      flexWrap: 'wrap',
+      justifyContent:"space-between",
+      padding:"2em 5em"
+    },
+    
   }));
 
 const CardList = () => {
@@ -23,13 +30,21 @@ const CardList = () => {
     const [personajes, setPersonajes] = useState([])
     const [isLoad, setIsLoad] = useState(true)
     const [error, setError] = useState()
+    const [url, setUrl] = useState({
+      now:"https://rickandmortyapi.com/api/character/",
+      next:""
+    })
 
-    const fetchPersonaje = async () => {
+    const fetchPersonaje = async (link) => {
       
       try{
-          const response = await axios.get("https://rickandmortyapi.com/api/character/")
+          const response = await axios.get(link)
           setPersonajes(response.data.results)
-          setIsLoad(false)
+          setUrl({
+            ...url,
+            now:response.info.prev,
+            next:response.info.next
+          })
         }catch(e){
           setError(e)
           console.log(error)
@@ -42,7 +57,7 @@ const CardList = () => {
     //Declaro el efecto
     useEffect(() => {
         //ComponentDidMount
-        fetchPersonaje()
+        fetchPersonaje(url.now)
         console.log(isLoad)
         console.log(isLoad)
         //mi sanamiento (componentdDidUpdate y ComponentWillUnmount)
@@ -50,6 +65,9 @@ const CardList = () => {
 
     const classes = useStyles();
     console.log(personajes)
+    const handleClick = () =>{
+
+    }
 
     return(
         
@@ -66,8 +84,13 @@ const CardList = () => {
                 />
               ))}
             </Paper>
-            <div>
-              
+            <div className={classes.wraper}>
+              <Button variant="contained" color="primary" href="#contained-buttons">
+                Anterior
+              </Button>
+              <Button variant="contained" color="primary" href="#contained-buttons">
+                Siguiente
+              </Button>
             </div>
           </div>
         }
