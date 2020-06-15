@@ -5,6 +5,7 @@ import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
 import axios from 'axios';
 import CardView from './CardView'
+import Loader from './Loader'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -20,16 +21,30 @@ const useStyles = makeStyles((theme) => ({
 const CardList = () => {
     //declaro el state
     const [personajes, setPersonajes] = useState([])
+    const [isLoad, setIsLoad] = useState(true)
+    const [error, setError] = useState()
 
-    const fetchPersonaje = async () =>{
-        const response = await axios.get("https://rickandmortyapi.com/api/character/")
-        setPersonajes(response.data.results)
+    const fetchPersonaje = async () => {
+      
+      try{
+          const response = await axios.get("https://rickandmortyapi.com/api/character/")
+          setPersonajes(response.data.results)
+          setIsLoad(false)
+        }catch(e){
+          setError(e)
+          console.log(error)
+          setIsLoad(false)
+        }
+      console.log(isLoad)
     }
+
     
     //Declaro el efecto
     useEffect(() => {
         //ComponentDidMount
         fetchPersonaje()
+        console.log(isLoad)
+        console.log(isLoad)
         //mi sanamiento (componentdDidUpdate y ComponentWillUnmount)
     },[])
 
@@ -39,18 +54,23 @@ const CardList = () => {
     return(
         
       <div>
-        <Paper elevation={3} className={classes.root}>
-          {personajes.map((personaje)=>(
-            <CardView
-              key={personaje.id}
-              data = {personaje} 
-            />
-          ))}
-        </Paper>
-        <div>
-          <ArrowRightIcon/>
-          <ArrowLeftIcon/>
-        </div>
+        {isLoad?
+          <Loader />
+          :
+          <div>
+            <Paper elevation={3} className={classes.root}>
+              {personajes.map((personaje)=>(
+                <CardView
+                  key={personaje.id}
+                  data = {personaje} 
+                />
+              ))}
+            </Paper>
+            <div>
+              
+            </div>
+          </div>
+        }
       </div>
         
     )
